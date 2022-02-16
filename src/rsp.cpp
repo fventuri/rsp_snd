@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2021 Franco Venturi.
+ * Copyright 2022 Franco Venturi.
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -73,15 +73,18 @@ void Rsp::select_device(const std::string& serial, const std::string& antenna)
     if (err != sdrplay_api_Success)
         throw Rsp::Exception("sdrplay_api_GetDevices() failed");
 
+    int device_index = 0;
     bool found = false;
     for (int i = 0; i < ndevices; i++) {
+        device_index++;
         if (devices[i].hwVer == SDRPLAY_RSPduo_ID) {
-            if (select_device_rspduo(devices[i], serial, antenna)) {
+            if (select_device_rspduo(devices[i], device_index, serial, antenna)) {
                 found = true;
                 break;
             }
         } else {
-            if (serial.empty() || serial == devices[i].SerNo) {
+            if (serial.empty() || serial == devices[i].SerNo ||
+                                  serial == std::to_string(device_index)) {
                 found = true;
                 device = devices[i];
                 break;
@@ -117,31 +120,38 @@ void Rsp::select_device(const std::string& serial, const std::string& antenna)
 }
 
 bool Rsp::select_device_rspduo(sdrplay_api_DeviceT& device_rspduo,
+                               int device_index,
                                const std::string& serial,
                                const std::string& antenna)
 {
     bool found = false;
     if (device_rspduo.rspDuoMode & sdrplay_api_RspDuoMode_Single_Tuner) {
-        if (serial.empty() || serial == device_rspduo.SerNo) {
+        if (serial.empty() || serial == device_rspduo.SerNo ||
+                              serial == std::to_string(device_index)) {
             found = true;
             device = device_rspduo;
             device.rspDuoMode = sdrplay_api_RspDuoMode_Single_Tuner;
         }
     } else if (device_rspduo.rspDuoMode & sdrplay_api_RspDuoMode_Master) {
-        if (serial == std::string(device_rspduo.SerNo) + "/M") {
+        if (serial == std::string(device_rspduo.SerNo) + "/M" ||
+            serial == std::to_string(device_index) + "/M") {
             found = true;
             device = device_rspduo;
             device.rspDuoMode = sdrplay_api_RspDuoMode_Master;
             device.rspDuoSampleFreq = 6e6;
-        } else if (serial == std::string(device_rspduo.SerNo) + "/M8") {
+        } else if (serial == std::string(device_rspduo.SerNo) + "/M8" ||
+                   serial == std::to_string(device_index) + "/M8") {
             found = true;
             device = device_rspduo;
             device.rspDuoMode = sdrplay_api_RspDuoMode_Master;
             device.rspDuoSampleFreq = 8e6;
         }
     } else if (device_rspduo.rspDuoMode == sdrplay_api_RspDuoMode_Slave) {
-        found = true;
-        device = device_rspduo;
+        if (serial.empty() || serial == device_rspduo.SerNo ||
+                              serial == std::to_string(device_index)) {
+            found = true;
+            device = device_rspduo;
+        }
     }
 
     if (!found)

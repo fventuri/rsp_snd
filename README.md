@@ -74,7 +74,7 @@ gain_file = /gainfile
 rsp_snd -i 4798 -r 768000 -f 14150000 -n -B 600 -g 37 -l 3 -a 16384 -b 4096 -c 100 -x 1000 -y 200 -z 5000 -s 1 -S 3 -e /gainfile
 ```
 
-- using a configuration file (command line arguments override settings in the configuration file)
+- using a configuration file (command line arguments override settings in the configuration file):
 ```
 rsp_snd -C rsp_snd.conf -f 7150000
 ```
@@ -82,7 +82,7 @@ rsp_snd -C rsp_snd.conf -f 7150000
 
 ## Credits
 
-Many thanks to Gary Wong, AB1IP and Clint Turner, Ka7OEI for creating sdrplayalsa and their significant work on the AGC (model GTW)
+Many thanks to Gary Wong, AB1IP and Clint Turner, KA7OEI for creating sdrplayalsa and their significant work on the AGC (model GTW)
 
 
 ## Copyright

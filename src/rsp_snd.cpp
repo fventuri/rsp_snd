@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2021 Franco Venturi.
+ * Copyright 2022 Franco Venturi.
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */

@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2021 Franco Venturi.
+ * Copyright 2022 Franco Venturi.
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -76,6 +76,7 @@ public:
 private:
     void select_device(const std::string& serial, const std::string& antenna);
     bool select_device_rspduo(sdrplay_api_DeviceT& device_rspduo,
+                              int device_index,
                               const std::string& serial,
                               const std::string& antenna);
 
