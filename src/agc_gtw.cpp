@@ -53,10 +53,8 @@ void AgcGtw::start(RingBuffer<short[2]> *buffer)
     samples_left = samples_per_millis;
     millis_since_last_agc_check = 0;
     millis_since_last_gain_change = 0;
-    iq2_increase_threshold = agc1_increase_threshold * agc1_increase_threshold;
-    iq2_decrease_threshold = agc2_decrease_threshold * agc2_decrease_threshold;
-    max_iq2 = 0;
     millis_iq_above_threshold = 0;
+    max_iq = 0;
 
     run = true;
     thread = std::thread([this, buffer] { agc_loop(buffer); });
@@ -84,15 +82,13 @@ void AgcGtw::agc_loop(RingBuffer<short[2]> *buffer)
                 millis_since_last_gain_change++;
                 samples_left = samples_per_millis;
             }
-            int xi = static_cast<int>(read_ptr[i][0]);
-            int xq = static_cast<int>(read_ptr[i][1]);
-            auto iq2 = xi * xi + xq * xq;
+            auto iq = std::max(abs(read_ptr[i][0]), abs(read_ptr[i][1]));
 
             // high water mark
-            max_iq2 = std::max(iq2, max_iq2);
+            max_iq = std::max(iq, max_iq);
 
             // how long above high threshold
-            if (iq2 > iq2_increase_threshold) {
+            if (iq > agc1_increase_threshold) {
                 // prevent overflow
                 if (millis_iq_above_threshold < INT_MAX)
                     millis_iq_above_threshold++;
@@ -105,13 +101,13 @@ void AgcGtw::agc_loop(RingBuffer<short[2]> *buffer)
             if (millis_since_last_gain_change > agc5_b && millis_iq_above_threshold > agc4_a) {
                 gain_reduction += gainstep_inc;
                 gain_reduction = std::min(max_gain_reduction, gain_reduction);
-            } else if (millis_since_last_gain_change > agc6_c && max_iq2 < iq2_increase_threshold) {
+            } else if (millis_since_last_gain_change > agc6_c && max_iq < agc2_decrease_threshold) {
                 gain_reduction -= gainstep_dec;
                 gain_reduction = std::max(min_gain_reduction, gain_reduction);
             }
 
             millis_since_last_agc_check = 0;
-            max_iq2 = 0;
+            max_iq = 0;
             millis_iq_above_threshold = 0;
 
             // change IF gain reduction?

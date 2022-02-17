@@ -56,10 +56,8 @@ private:
     int samples_left;
     int millis_since_last_agc_check;
     int millis_since_last_gain_change;
-    int iq2_increase_threshold;
-    int iq2_decrease_threshold;
-    int max_iq2;
     int millis_iq_above_threshold;
+    int max_iq;
 
     int agc1_increase_threshold;
     int agc2_decrease_threshold;
