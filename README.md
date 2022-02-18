@@ -82,7 +82,7 @@ rsp_snd -C rsp_snd.conf -f 7150000
 
 ## Credits
 
-Many thanks to Gary Wong, AB1IP and Clint Turner, KA7OEI for creating sdrplayalsa and their significant work on the AGC (model GTW)
+Many thanks to Clint Turner, KA7OEI, Gary Crum, KK7DV, and Gary Wong, AB1IP for creating sdrplayalsa and their significant work on the AGC (model GTW)
 
 
 ## Copyright
